@@ -1,0 +1,124 @@
+<!--Lyndon Gonzales
+using ajax and simple html to acheive api calls to the bot.  nothing special. it works super fast.
+not sure if theres something else going on with the current endpoint, but it helps tpo experiment with. 
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Chatbot</title>
+
+    <style>
+        #chatbox {
+            width: 800px;
+            height: 300px;
+            border: 1px solid black;
+            overflow-y: scroll;
+            padding: 10px;
+        }
+        #chatbox p {
+            white-space: pre-wrap; /* This will preserve spaces, tabs, and newlines */
+        }
+    </style>
+	
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<body>
+    <h1>Chatbot</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type your question here">
+    <!---<button onclick="sendMessage()">Send</button>--->
+    <button onclick="callAPI()">Send</button>
+
+    <script>
+	
+		function appendMessage(sender, text) {
+			var time = new Date();
+			var formattedTime = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds(); // Format: Hours:Minutes:SS
+
+			var message = document.createElement("p");
+			//message.innerHTML = "<strong>" + sender + " (" + formattedTime + "):</strong> " + text;
+			message.textContent =  sender + " (" + formattedTime + ") " + text;
+			
+			document.getElementById("chatbox").appendChild(message);
+
+			// Scroll to the bottom of the chatbox
+			var chatbox = document.getElementById("chatbox");
+			chatbox.scrollTop = chatbox.scrollHeight;
+		}
+		
+        function callAPI() {
+		
+			var userInput = document.getElementById("userInput").value;
+			document.getElementById("userInput").value = "";	<!--clear out the textbox when sending.-->
+            var jsonData = {
+                "data": {
+                    <!--"type": "railcar_maintenance_manual",-->
+                    "type": "M-1002",
+                    "action": "next",
+                    "conversation_id": "2B8AD47C-1F7F-EE11-B75E-002248ACA715",
+                    "messages": [
+                        {
+                            "id": "2B8AD47C-1F7F-EE11-B75E-002248ACA715",
+                            "content": {
+                                "content_type": "text",
+                                "parts": [
+									userInput
+                                    //"How should valve rod packing be replaced and lubricated?"
+                                ]
+                            },
+                            "metadata": {},
+                            "version": 1
+                        }
+                    ]
+                }
+            };
+			
+            //var userMessage = document.createElement("p");
+            //userMessage.innerHTML = "<strong>User:</strong> " + userInput;
+            //document.getElementById("chatbox").appendChild(userMessage);	<!--past the last message into chat window-->
+			appendMessage("User", userInput);
+			
+            $.ajax({
+                //url: 'http://127.0.0.1:8000/backend-api/v1/conversation/',
+                url: 'https://botapi-v1-development.bds-advance-ase-ext.p.azurewebsites.net/backend-api/v1/conversation',
+				
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(jsonData),
+                success: function(response) {
+                    console.log(response);
+					
+					var parts = response.data.messages[0].content.parts;
+                    var aiMessageText = parts.join(" "); // Join parts if there are multiple parts
+
+                    // Display the AI's message
+                    //var aiMessage = document.createElement("p");
+                    //aiMessage.innerHTML = "<strong>AI:</strong> " + aiMessageText;
+                    //document.getElementById("chatbox").appendChild(aiMessage);
+					appendMessage("AI", aiMessageText);
+
+                },
+                error: function(error) {
+                    console.log(error);
+                    var userMessage = document.createElement("p");
+					userMessage.innerHTML = "<strong>Error:</strong> " + userInput;
+					document.getElementById("chatbox").appendChild(userMessage);
+                }
+            });
+        }		
+    </script>
+</body>
+</html>
+
+<!--
+In this example, the main window contains a chatbox (`<div id="chatbox"></div>`) where the conversation between the user and the AI will be displayed. There is an input textbox (`<input type="text" id="userInput" placeholder="Type your question here">`) for the user to type their questions, and a send button (`<button onclick="sendMessage()">Send</button>`) to send the message to the Flask API.
+
+The JavaScript function `sendMessage()` is triggered when the send button is clicked. It retrieves the user's input, creates a new paragraph element to display the user's message in the chatbox, and sends a POST request to the Flask API endpoint `/api/chat` with the user's message as the request body.
+
+The Flask API should handle this request, process the user's message, and return a response containing the AI's message. The response is then displayed in the chatbox as a new paragraph element.
+
+Note: This HTML page assumes that you have already set up the Flask API with the appropriate route for handling the chat messages.
+-->
+
