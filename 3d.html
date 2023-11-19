@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D Cube Graph</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Define the cube's properties
+        const cubeSize = 100;
+        const cubeCenter = {
+            x: canvas.width / 2,
+            y: canvas.height / 2
+        };
+
+        // Function to draw a line between two points
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        // Function to draw the cube
+        function drawCube() {
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the cube's edges
+            drawLine(cubeCenter.x - cubeSize / 2, cubeCenter.y - cubeSize / 2, cubeCenter.x + cubeSize / 2, cubeCenter.y - cubeSize / 2);
+            drawLine(cubeCenter.x + cubeSize / 2, cubeCenter.y - cubeSize / 2, cubeCenter.x + cubeSize / 2, cubeCenter.y + cubeSize / 2);
+            drawLine(cubeCenter.x + cubeSize / 2, cubeCenter.y + cubeSize / 2, cubeCenter.x - cubeSize / 2, cubeCenter.y + cubeSize / 2);
+            drawLine(cubeCenter.x - cubeSize / 2, cubeCenter.y + cubeSize / 2, cubeCenter.x - cubeSize / 2, cubeCenter.y - cubeSize / 2);
+            drawLine(cubeCenter.x - cubeSize / 2, cubeCenter.y - cubeSize / 2, cubeCenter.x, cubeCenter.y - cubeSize);
+            drawLine(cubeCenter.x + cubeSize / 2, cubeCenter.y - cubeSize / 2, cubeCenter.x + cubeSize / 2, cubeCenter.y - cubeSize);
+            drawLine(cubeCenter.x + cubeSize / 2, cubeCenter.y + cubeSize / 2, cubeCenter.x, cubeCenter.y + cubeSize);
+            drawLine(cubeCenter.x - cubeSize / 2, cubeCenter.y + cubeSize / 2, cubeCenter.x - cubeSize / 2, cubeCenter.y + cubeSize);
+            drawLine(cubeCenter.x, cubeCenter.y - cubeSize, cubeCenter.x, cubeCenter.y + cubeSize);
+        }
+
+        // Call the drawCube function to draw the initial cube
+        drawCube();
+    </script>
+</body>
+</html>
